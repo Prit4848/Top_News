@@ -8,6 +8,8 @@ router.post("/register",userMiddlewear.registerUserValidation,userController.cre
 
 router.post("/login",userMiddlewear.loginUserValidation,userController.loginUserController)
 
-router.get("/")
+router.get('/profile',userMiddlewear.authUserMiddleweare,userController.profile)
+
+router.get("/logout",userMiddlewear.authUserMiddleweare,userController.logout)
 
 export default router;

@@ -49,3 +49,29 @@ export const loginUserController = async (req, res) => {
         res.status(401).send(error.message);
     }
 }
+
+export const profile = async (req,res)=>{
+    try {
+        const user = req.user;
+
+        res.status(200).json({user:user})
+    } catch (error) {
+        console.log(error);
+        res.status(401).send(error.message);
+    }
+}
+
+export const logout = async (req,res)=>{
+    try {
+        const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ];
+
+        await userService.blacklistToken({token})
+
+        res.clearCookie('token')
+
+        res.status(200).json({message:"Log Out"})
+    } catch (error) {
+        console.log(error);
+        res.status(401).send(error.message);
+    }
+}

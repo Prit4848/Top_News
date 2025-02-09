@@ -1,3 +1,4 @@
+import blacklistTokenModel from "../models/blacklistToken.model.js";
 import userModel from "../models/user.model.js";
 
 
@@ -47,4 +48,10 @@ export const loginUser = async ({ email, password }) => {
     delete user._doc.password;
 
     return user;
+}
+
+export const blacklistToken = async ({token})=>{
+ await blacklistTokenModel.create({token:token})  
+
+ return;
 }
