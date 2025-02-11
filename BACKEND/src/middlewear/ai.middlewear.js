@@ -1,7 +1,7 @@
 import {body} from 'express-validator'
 
 export const  newsPromtValidation= [
-    body('prompt')
+    body('article')
         .isString()
         .withMessage('first must be a string')
         .isLength({ min: 3})
