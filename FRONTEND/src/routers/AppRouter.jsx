@@ -5,6 +5,7 @@ import Home from '../screens/Home'
 import Login from '../screens/Login'
 import Register from '../screens/Register'
 import UserProtectedWrapper from '../auth/userProtectedWrapper'
+import ReadMore from '../screens/ReadMore'
 
 
 const AppRouter = () => {
@@ -13,6 +14,7 @@ const AppRouter = () => {
     <Routes>
         <Route path='/' element={<GetStart/>} />
         <Route path='/home' element={<UserProtectedWrapper><Home/></UserProtectedWrapper>} />
+        <Route path='/home/readmore' element={<UserProtectedWrapper><ReadMore/></UserProtectedWrapper>} />
         <Route path='/login' element={<Login/>} />
         <Route path='/Register' element={<Register/>} />
     </Routes>

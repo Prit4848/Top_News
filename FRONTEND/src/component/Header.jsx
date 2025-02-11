@@ -1,71 +1,99 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
+import Headermain from "./Headermain";
+import NewsContext from "../context/NewsContext"; 
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
 
 const Header = () => {
+  const { setallNews } = useContext(NewsContext);
+  const [search, setSearch] = useState("");
+
+  // ✅ Fetch News Based on Category
+  const GetNewsByCategory = async (category) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("Authentication failed. Please log in again.");
+        return;
+      }
+
+      console.log("Token being sent:", token);
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/news/getnews`,  
+        { prompt: category }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        setallNews(response.data.result);
+      } else {
+        toast.error("Something went wrong. Please try again ❌");
+      }
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      toast.error("Something went wrong. Please try again ❌");
+    }
+  };
+
+  // ✅ Fetch News Based on Search Input
+  const GetNewsBySearch = async (e) => {
+    e.preventDefault(); // Prevent page reload
+
+    if (!search.trim()) {
+      toast.warning("Please enter a search term 🔍");
+      return;
+    }
+
+    await GetNewsByCategory(search);
+  };
+
+  // Fetch default news when the component mounts
+  useEffect(() => {
+    GetNewsByCategory("All News");
+  }, []);
+
   return (
     <>
-      {/* Navbar */}
       <nav className="flex flex-col items-center py-6 border-b border-gray-700 space-y-4">
-        <div className="flex w-full justify-between">
-          {/* Centered Logo */}
-          <h1 className="text-7xl text-center font-extrabold text-red-500 ml-52">
-            Top<span className="text-blue-500">News</span>
-          </h1>
+        <ToastContainer position="top-right" />
+        <Headermain />
 
-          {/* Navigation Links */}
-          <div className="w-full flex justify-end space-x-8 py-4 mr-36 gap-20">
-            {["Home", "About", "Contact Us", "Connect"].map(
-              (category, index) => (
-                <button
-                  key={index}
-                  className="relative px-6 py-3 text-lg font-semibold text-white transition duration-300 rounded-full 
-                           hover:bg-red-500 hover:text-white"
-                >
-                  {category}
-                  <span className="absolute inset-0 border-2 border-red-500 rounded-lg transition-all duration-300 transform scale-100 hover:scale-110"></span>
-                </button>
-              )
-            )}
-          </div>
-        </div>
-
-        {/* Category & Search Bar Section */}
         <div className="w-full flex justify-between items-center px-12 mt-4">
-          {/* Category Buttons */}
+          {/* 🔹 News Category Buttons */}
           <div className="flex flex-wrap justify-center ml-20 gap-32">
-            {[
-              "All News",
-              "Trending",
-              "Sports",
-              "Politics",
-              "Entertainment",
-              "Health",
-              "Fitness",
-            ].map((category, index) => (
+            {["All News", "Trending", "Sports", "Politics", "Entertainment", "Health", "Fitness"].map((category, index) => (
               <button
+                onClick={() => GetNewsByCategory(category)}
                 key={index}
-                className="px-6 py-2 text-lg font-medium text-white  rounded-lg
-                             hover:bg-red-500 transition-all duration-300"
+                className="px-6 py-2 text-lg font-medium text-white rounded-lg hover:bg-red-500 transition-all duration-300"
               >
                 {category}
               </button>
             ))}
           </div>
 
-          {/* Search Bar */}
+          {/* 🔹 Search Bar */}
           <div className="flex items-center bg-gray-800 px-4 py-2 rounded-lg shadow-md w-80 mr-20">
-            <input
-              type="text"
-              placeholder="Search News"
-              className="bg-transparent flex-1 outline-none text-white placeholder-gray-400 px-2"
-            />
-            <button className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition-all duration-300">
-              Search
-            </button>
+            <form onSubmit={GetNewsBySearch} className="flex w-full">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                type="text"
+                placeholder="Search News"
+                className="bg-transparent flex-1 outline-none text-white placeholder-gray-400 px-2"
+              />
+              <button 
+                type="submit"
+                className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition-all duration-300"
+              >
+                Search
+              </button>
+            </form>
           </div>
         </div>
       </nav>
-
-      
     </>
   );
 };
