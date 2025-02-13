@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "../config/config.js";
+import Gtts from 'gtts'
 
 export const NewsApiResult = async ({ prompt }) => {
   if (!prompt) {
@@ -22,4 +23,21 @@ export const NewsApiResult = async ({ prompt }) => {
     console.error("Error fetching news:", error.message);
     throw new Error("Failed to fetch news. Please try again later.");
   }
+};
+
+export const gtts = async (prompt) => {
+  return new Promise((resolve, reject) => {
+    const text = prompt || 'Hello';
+    const lang = 'hi';
+    const gtts = new Gtts(text, lang);
+    const filePath = 'output.mp3';
+
+    gtts.save(filePath, (err) => {
+      if (err) {
+        console.error('Error:', err);
+        return reject('Error generating speech');
+      }
+      resolve(filePath);
+    });
+  });
 };

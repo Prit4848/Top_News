@@ -6,4 +6,8 @@ import * as newsController from '../controller/news.controller.js'
 
 router.post('/getnews',[userMiddlewear.authUserMiddleweare,newsMiddlewear.newsPromtValidation],newsController.getnews)
 
+router.post('/moredescription',[userMiddlewear.authUserMiddleweare,newsMiddlewear.newsPromtValidation],newsController.getmoredescription)
+
+router.post('/texttospeech',[userMiddlewear.authUserMiddleweare,newsMiddlewear.newsPromtValidation],newsController.getTextToSpeech)
+
 export default router;
