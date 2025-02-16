@@ -12,3 +12,16 @@ export const getsummery = async ({prompt})=>{
       
       return result.response.text()  
 }
+
+export const gettranslate = async({text,language})=>{
+  if(!text && !language){
+    throw new Error("text and Language are require")
+  }
+
+  const genAI = new GoogleGenerativeAI (`${config.GEMINI_API_KEY}`);
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" },{systemInstruction:`translate text into ${language} language`});
+      
+  const result = await model.generateContent(text);
+
+  return result.response.text();
+}

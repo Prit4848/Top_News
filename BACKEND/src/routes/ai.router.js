@@ -7,4 +7,6 @@ import * as aiController from '../controller/ai.controller.js'
 
 router.post('/getsummery',userMiddlewear.authUserMiddleweare,aiMiddlewear.newsPromtValidation,aiController.getSummery)
 
+router .post('/translate',userMiddlewear.authUserMiddleweare,aiMiddlewear.newsTranslateValidator,aiController.getTranslate)
+
 export default router;

@@ -14,7 +14,7 @@ const Headermain = () => {
 
         {/* Navigation Links */}
         <div className="w-full flex justify-end space-x-8 py-4 mr-36 gap-20">
-          {["Home", "About", "Contact Us", "Connect"].map((category, index) => (
+          {["Home", "About", "ContactUs", "Connect"].map((category, index) => (
             <button
               onClick={() => navigate(`/${category.toLowerCase().replace(/\s+/g, '-')}`)}
               key={index}

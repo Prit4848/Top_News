@@ -6,6 +6,9 @@ import Login from '../screens/Login'
 import Register from '../screens/Register'
 import UserProtectedWrapper from '../auth/userProtectedWrapper'
 import ReadMore from '../screens/ReadMore'
+import { ContactUs } from '../screens/ContactUs'
+import ConnectPage from '../screens/Connect'
+import AboutPage from '../screens/About'
 
 
 const AppRouter = () => {
@@ -17,6 +20,9 @@ const AppRouter = () => {
         <Route path='/home/readmore' element={<UserProtectedWrapper><ReadMore/></UserProtectedWrapper>} />
         <Route path='/login' element={<Login/>} />
         <Route path='/Register' element={<Register/>} />
+        <Route path='/ContactUs' element={<ContactUs/>} />
+        <Route path='/Connect' element={<ConnectPage/>} />
+        <Route path='/About' element={<AboutPage/>} />
     </Routes>
     </BrowserRouter>
   )
