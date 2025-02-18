@@ -6,7 +6,7 @@ import Login from '../screens/Login'
 import Register from '../screens/Register'
 import UserProtectedWrapper from '../auth/userProtectedWrapper'
 import ReadMore from '../screens/ReadMore'
-import { ContactUs } from '../screens/ContactUs'
+import  ContactUs  from '../screens/ContactUs'
 import ConnectPage from '../screens/Connect'
 import AboutPage from '../screens/About'
 

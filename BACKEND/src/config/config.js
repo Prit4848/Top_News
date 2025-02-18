@@ -6,7 +6,10 @@ const _config = {
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_EXPIRES_IN :process.env.JWT_EXPIRES_IN,
     NEWS_API_KEY : process.env.NEWS_API_KEY,
-    GEMINI_API_KEY : process.env.GEMINI_API_KEY
+    GEMINI_API_KEY : process.env.GEMINI_API_KEY,
+    EMAIL_USER:process.env.EMAIL_USER,
+    EMAIL_PASS:process.env.EMAIL_PASS,
+    MYEMAIL:process.env.MYEMAIL
 }
 
 const config = Object.freeze(_config);

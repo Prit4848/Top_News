@@ -38,6 +38,22 @@ export const loginUserValidation = [
         .withMessage("Password must be at least 6 characters"),
 ]
 
+export const contactUsValidator = [
+    body('name')
+        .isString()
+        .withMessage('first must be a string')
+        .isLength({ min: 3, max: 15 })
+        .withMessage('name must be between 3 and 15 characters'),
+    body('email')
+        .isEmail()
+        .withMessage('Email must be a valid email'),
+    body('message')
+        .isString()
+        .withMessage('Password must be a string')
+        .isLength({ min: 1 })
+        .withMessage("message must be at least 1 characters")
+]
+
 export const authUserMiddleweare = async (req,res,next)=>{
     try {
         const token = req.cookies.token || req.headers.authorization?.split(' ')[1] || req.header("Authorization")?.split(" ")[1];

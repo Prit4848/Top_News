@@ -9,7 +9,7 @@ const ReadMore = () => {
   const newsData = location.state?.news;
   const [description, setdescription] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [loadingTranslate, setLoadingTranslate] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [token, settoken] = useState("");
@@ -18,33 +18,34 @@ const ReadMore = () => {
   useEffect(() => {
     settoken(localStorage.getItem("token"));
   }, []);
- 
+
   // handle the description
+  const [loadingDescription, setLoadingDescription] = useState(true); // Added state
+
   const getDescriptionHandller = async () => {
+    setLoadingDescription(true); // Show loading spinner
     try {
       const prompt_1 = newsData.description;
       const prompt = prompt_1.concat(
-        "get more description of this news  100 lines pagraph form not in point wise and article formate"
+        "get more description of this news  100 lines paragraph format, not in point-wise but as an article."
       );
-      await axios
-        .post(
-          `${import.meta.env.VITE_BASE_URL}/news/moredescription`,
-          { prompt },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        )
-        .then((Response) => {
-          if (Response.status == 200 || Response.status == 201) {
-            setdescription(Response.data.result);
-          } else {
-            setdescription(prompt);
-          }
-        });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/news/moredescription`,
+        { prompt },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+
+      if (response.status === 200 || response.status === 201) {
+        setdescription(response.data.result);
+      } else {
+        setdescription(prompt);
+      }
     } catch (error) {
-      console.log(error.message);
+      console.error("Error fetching description:", error);
+    } finally {
+      setLoadingDescription(false); // Hide loading spinner
     }
   };
 
@@ -77,16 +78,15 @@ const ReadMore = () => {
     } catch (error) {
       console.error("Error fetching TTS audio:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
-  
+
   // convert Date Proper Formate
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
 
   // Handle Summery section
   const handleGetSummary = async () => {
@@ -174,7 +174,7 @@ const ReadMore = () => {
               {/* Language Selection */}
               <select
                 className="bg-gray-700 text-white px-6 py-2 rounded-lg  "
-                 value={selectedLanguage}
+                value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
               >
                 <option value="English">English</option>
@@ -217,10 +217,17 @@ const ReadMore = () => {
             </div>
           </div>
 
-          {/* Description */}
-          <p className="text-lg text-gray-300 mt-6 leading-relaxed">
-            {description}
-          </p>
+          {/* Description Section */}
+          <div className="text-lg text-gray-300 mt-6 leading-relaxed">
+            {loadingDescription ? (
+              // Loading Spinner
+              <div className="flex justify-center items-center h-32">
+                <div className="w-10 h-10 border-4 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              description
+            )}
+          </div>
         </div>
 
         {/* Right Side - Text to Speech, Summary, and Back Button */}

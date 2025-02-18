@@ -75,3 +75,16 @@ export const logout = async (req,res)=>{
         res.status(401).send(error.message);
     }
 }
+
+export const contactus = async (req,res)=>{
+    try {
+        const {name,message,email} = req.body;
+
+        const result = await userService.contactUs({name,message,email})
+        
+        res.status(200).json({result})
+    } catch (error) {
+        console.log(error);
+        res.status(401).send(error.message);
+    }
+}

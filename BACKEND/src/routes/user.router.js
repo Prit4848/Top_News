@@ -12,4 +12,6 @@ router.get('/profile',userMiddlewear.authUserMiddleweare,userController.profile)
 
 router.get("/logout",userMiddlewear.authUserMiddleweare,userController.logout)
 
+router.post('/contactus',userMiddlewear.authUserMiddleweare,userMiddlewear.contactUsValidator,userController.contactus)
+
 export default router;
