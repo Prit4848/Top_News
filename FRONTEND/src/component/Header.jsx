@@ -51,7 +51,7 @@ const Header = () => {
 
   // Fetch default news when the component mounts
   useEffect(() => {
-    GetNewsByCategory("india news");
+    GetNewsByCategory("wold");
   }, []);
 
   return (
