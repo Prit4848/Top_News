@@ -14,6 +14,10 @@ export const AddSubscribers = async ({email})=>{
 
    const admin = await adminModel.findOne();
 
+   if (!admin) {
+    admin = new adminModel({ subscribers: [] });
+  }
+
 
   if (admin.subscribers.includes(user._id)) {
     throw new Error("User is already subscribed");

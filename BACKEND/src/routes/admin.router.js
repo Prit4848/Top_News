@@ -6,6 +6,6 @@ import * as adminController from '../controller/admin.controller.js'
 
 router.post('/login',adminMiddlewear.loginAdminValidation,adminController.loginAdmin)
 
-router.post('/Subscribe',adminMiddlewear.SubscribeValidator)
+router.post('/subscribe',adminMiddlewear.SubscribeValidator,adminController.addSubscribers)
 
 export default router;

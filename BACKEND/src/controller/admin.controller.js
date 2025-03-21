@@ -1,6 +1,6 @@
 import { validationResult } from "express-validator";
 import jwt from 'jsonwebtoken'
-import config from "../config/config";
+import config from "../config/config.js";
 import * as adminServices from "../services/admin.services.js"
 
 export const loginAdmin = async (req, res) => {
