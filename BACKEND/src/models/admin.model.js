@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const AdminSchema = new mongoose.Schema({
   subscribers: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      type: String,
+      require:true,
     },
   ],
 });

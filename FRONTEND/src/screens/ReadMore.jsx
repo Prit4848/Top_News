@@ -20,10 +20,10 @@ const ReadMore = () => {
   }, []);
 
   // handle the description
-  const [loadingDescription, setLoadingDescription] = useState(true); // Added state
+  const [loadingDescription, setLoadingDescription] = useState(true); 
 
   const getDescriptionHandller = async () => {
-    setLoadingDescription(true); // Show loading spinner
+    setLoadingDescription(true); 
     try {
       const prompt_1 = newsData.description;
       const prompt = prompt_1.concat(
@@ -45,7 +45,7 @@ const ReadMore = () => {
     } catch (error) {
       console.error("Error fetching description:", error);
     } finally {
-      setLoadingDescription(false); // Hide loading spinner
+      setLoadingDescription(false); 
     }
   };
 

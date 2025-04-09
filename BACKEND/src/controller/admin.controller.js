@@ -46,3 +46,35 @@ export const addSubscribers = async (req,res) => {
     res.status(500).send(error.message);
   }
 };
+
+
+export const sendUpdates = async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    const imageBuffer = req.file?.buffer;
+    const imageName = req.file?.originalname;
+
+    if (!imageBuffer) {
+      return res.status(400).json({ error: 'Image is required' });
+    }
+
+    await adminServices.SendEmail({ name, description, imageBuffer, imageName });
+
+    res.status(200).json({ message: 'Email sent successfully' });
+  } catch (error) {
+    console.error('Controller Error:', error);
+    res.status(500).json({ error: 'Failed to send email' });
+  }
+};
+
+
+export const Profile = async (req,res)=>{
+  try {
+    const admin = req.Admin;
+
+    res.status(200).json(admin)
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error.message);
+  }
+}

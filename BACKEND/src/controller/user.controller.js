@@ -64,7 +64,8 @@ export const profile = async (req,res)=>{
 export const logout = async (req,res)=>{
     try {
         const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ];
-
+         console.log(token);
+         
         await userService.blacklistToken({token})
 
         res.clearCookie('token')

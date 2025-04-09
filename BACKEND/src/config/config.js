@@ -9,7 +9,9 @@ const _config = {
     GEMINI_API_KEY : process.env.GEMINI_API_KEY,
     EMAIL_USER:process.env.EMAIL_USER,
     EMAIL_PASS:process.env.EMAIL_PASS,
-    MYEMAIL:process.env.MYEMAIL
+    MYEMAIL:process.env.MYEMAIL,
+    EMAIL_USER:process.env.EMAIL_USER,
+    EMAIL_PASS:process.env.EMAIL_PASS
 }
 
 const config = Object.freeze(_config);
