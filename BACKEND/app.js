@@ -9,7 +9,9 @@ import aiRouter from './src/routes/ai.router.js'
 import adminRouter from './src/routes/admin.router.js'
 
 const app = express();
-app.use(cors())
+app.use(cors({
+    origin:["http://localhost:3000,https://top-news-six.vercel.app"]
+}))
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
