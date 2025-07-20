@@ -71,7 +71,7 @@ const Register = () => {
         >
           <form
             onSubmit={RegisterHanddler}
-            className="bg-gray-800/30 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-gray-700/50"
+            className="bg-gray-800 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-gray-700"
           >
             {/* Logo */}
             <motion.div

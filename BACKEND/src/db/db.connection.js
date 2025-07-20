@@ -5,8 +5,8 @@ import 'dotenv/config';
 export const connect = () => {
 
     mongoose.connect(`${config.MONGODB_URI}`)
-        .then(() => {
-            console.log("DB connected")
+        .then((result) => {
+            console.log("DB connected AT Host",result.connection.host)
         })
         .catch((err) => {
             console.log(err)

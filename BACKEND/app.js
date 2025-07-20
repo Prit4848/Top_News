@@ -16,6 +16,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
+app.get("/",(req,res)=>{
+    res.send("Backend Server Started!!")
+})
 
 app.use("/user",userRouter)
 app.use("/news",newsRouter)
