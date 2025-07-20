@@ -10,7 +10,7 @@ import adminRouter from './src/routes/admin.router.js'
 
 const app = express();
 app.use(cors({
-    origin:["http://localhost:3000","https://top-news-six.vercel.app"]
+    origin:"*"
 }))
 app.use(morgan('dev'));
 app.use(express.json());
