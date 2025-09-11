@@ -14,4 +14,6 @@ router.get("/logout",userMiddlewear.authUserMiddleweare,userController.logout)
 
 router.post('/contactus',userMiddlewear.authUserMiddleweare,userMiddlewear.contactUsValidator,userController.contactus)
 
+router.post('/google-login',userController.googleLoginController)
+
 export default router;

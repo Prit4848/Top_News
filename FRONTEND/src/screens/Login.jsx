@@ -1,10 +1,11 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Usercontext from "../context/UserContext";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [email, setemail] = useState("");
@@ -58,6 +59,27 @@ const Login = () => {
     } catch (error) {
       console.error(error.message);
       toast.error("Invalid credentials ❌");
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const { credential } = credentialResponse;
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/user/google-login`,
+        { token: credential }
+      );
+
+      if (response.status === 200) {
+        toast.success("Google login successful ✅");
+        const { token, user } = response.data;
+        localStorage.setItem("token", token);
+        setuser(user);
+        navigate("/Home");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Google login failed ❌");
     }
   };
 
@@ -158,9 +180,36 @@ const Login = () => {
               Login
             </motion.button>
 
+            <div className="flex items-center w-full my-6">
+              <div className="flex-grow border-t border-gray-600"></div>
+              <span className="px-4 text-gray-400 text-sm font-medium">or</span>
+              <div className="flex-grow border-t border-gray-600"></div>
+            </div>
+
+            {/* Custom Styled Google Login */}
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => toast.error("Google Login Failed ❌")}
+              useOneTap
+              render={(renderProps) => (
+                <button
+                  onClick={renderProps.onClick}
+                  disabled={renderProps.disabled}
+                  className="flex items-center justify-center gap-3 w-full max-w-md p-5 mt-5 bg-white text-lg text-gray-800 rounded-xl font-semibold shadow-md hover:bg-gray-100 transition-all"
+                >
+                  <img
+                    src="https://developers.google.com/identity/images/g-logo.png"
+                    alt="Google"
+                    className="w-15 h-15"
+                  />
+                  Continue with Google
+                </button>
+              )}
+            />
+
             {/* Register Link */}
             <p className="mt-6 text-center text-gray-400 text-base">
-              Don't have an account?{" "}
+              Do Not have an account?{" "}
               <Link
                 to="/Register"
                 className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600 font-semibold hover:opacity-80 transition-opacity duration-300"

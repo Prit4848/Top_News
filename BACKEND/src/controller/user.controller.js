@@ -1,91 +1,163 @@
 import * as userService from "../services/user.services.js";
+import userModel from "../models/user.model.js";
 import { validationResult } from "express-validator";
 
+import { OAuth2Client } from "google-auth-library";
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 export const createUserController = async (req, res) => {
+  const errors = validationResult(req);
 
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-    const errors = validationResult(req);
+  try {
+    const { firstname, lastname, email, password } = req.body;
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
+    const user = await userService.createUser({
+      firstname,
+      lastname,
+      email,
+      password,
+    });
+    const token = user.generateToken();
 
-    try {
+    res.status(201).json({ user, token });
+  } catch (error) {
+    console.log(error);
 
-        const { firstname,lastname, email, password } = req.body;
-
-        const user = await userService.createUser({ firstname,lastname, email, password });
-        const token = user.generateToken();
-
-        res.status(201).json({ user, token });
-    } catch (error) {
-
-        console.log(error);
-
-        res.status(500).send(error.message);
-    }
-}
-
+    res.status(500).send(error.message);
+  }
+};
 
 export const loginUserController = async (req, res) => {
-    const errors = validationResult(req);
+  const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const { email, password } = req.body;
+
+    const user = await userService.loginUser({ email, password });
+
+    const token = user.generateToken();
+
+    return res.status(200).json({ user, token });
+  } catch (error) {
+    console.log(error);
+    res.status(401).send(error.message);
+  }
+};
+
+export const profile = async (req, res) => {
+  try {
+    const user = req.user;
+
+    res.status(200).json({ user: user });
+  } catch (error) {
+    console.log(error);
+    res.status(401).send(error.message);
+  }
+};
+
+export const logout = async (req, res) => {
+  try {
+    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+    console.log(token);
+
+    await userService.blacklistToken({ token });
+
+    res.clearCookie("token");
+
+    res.status(200).json({ message: "Log Out" });
+  } catch (error) {
+    console.log(error);
+    res.status(401).send(error.message);
+  }
+};
+
+export const contactus = async (req, res) => {
+  try {
+    const { name, message, email } = req.body;
+
+    const result = await userService.contactUs({ name, message, email });
+
+    res.status(200).json({ result });
+  } catch (error) {
+    console.log(error);
+    res.status(401).send(error.message);
+  }
+};
+
+export const googleLoginController = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: "Google Token is Require" });
     }
 
-    try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
 
-        const { email, password } = req.body;
-
-        const user = await userService.loginUser({ email, password });
-
-        const token = user.generateToken();
-
-        return res.status(200).json({ user, token });
-
-    } catch (error) {
-        console.log(error);
-        res.status(401).send(error.message);
+    if (!ticket) {
+      return res.status(401).json({ message: "Invalid Google Token" });
     }
-}
 
-export const profile = async (req,res)=>{
-    try {
-        const user = req.user;
+    const payload = ticket.getPayload();
 
-        res.status(200).json({user:user})
-    } catch (error) {
-        console.log(error);
-        res.status(401).send(error.message);
+    if (!payload) {
+      return res.status(401).json({ message: "Unable To Verify Google Token" });
     }
-}
 
-export const logout = async (req,res)=>{
-    try {
-        const token = req.cookies.token || req.headers.authorization?.split(' ')[ 1 ];
-         console.log(token);
-         
-        await userService.blacklistToken({token})
+    const { email, name, picture, sub } = payload;
 
-        res.clearCookie('token')
-
-        res.status(200).json({message:"Log Out"})
-    } catch (error) {
-        console.log(error);
-        res.status(401).send(error.message);
+    if (!email) {
+      return res
+        .status(400)
+        .json({ message: "Google account must have an email" });
     }
-}
-
-export const contactus = async (req,res)=>{
-    try {
-        const {name,message,email} = req.body;
-
-        const result = await userService.contactUs({name,message,email})
-        
-        res.status(200).json({result})
-    } catch (error) {
-        console.log(error);
-        res.status(401).send(error.message);
+    if (!sub) {
+      return res.status(400).json({ message: "Invalid Google account ID" });
     }
-}
+
+    let user = await userModel.findOne({ email });
+
+    if (user) {
+      if (!user.googleId) {
+        user.googleId = sub;
+        if (!user.profilePic) {
+          user.profilePic = picture;
+        }
+        await user.save();
+      }
+    } else {
+      user = new userModel({
+        name: {
+          firstname: name ? name.split(" ")[0] : "Google",
+          lastname: name ? name.split(" ")[1] || "" : "User",
+        },
+        email,
+        password: null,
+        googleId: sub,
+        profilePic: picture,
+      });
+      await user.save();
+    }
+
+    const authToken = user.generateToken();
+
+    res.status(200).json({
+      user,
+      token: authToken,
+    });
+  } catch (error) {
+    console.error("Google login error:", error);
+    res.status(401).json({ message: "Google login failed" });
+  }
+};
