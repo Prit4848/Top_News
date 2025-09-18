@@ -1,12 +1,12 @@
-import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiLogOut } from 'react-icons/fi'; // Logout icon
+import { FiLogOut } from 'react-icons/fi';
+import UserContext from '../context/UserContext'
+import { useContext } from 'react';
 
 const Headermain = () => {
   const navigate = useNavigate();
-
- 
-
+  const { user } = useContext(UserContext);
+  console.log(user)
   return (
     <>
       <div className="flex w-full justify-between items-center px-8 py-4">

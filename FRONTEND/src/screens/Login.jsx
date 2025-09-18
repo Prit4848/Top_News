@@ -36,7 +36,7 @@ const Login = () => {
             if (response.status == 200 || response.status == 201) {
               const token = response.data.token;
               localStorage.setItem("token", token);
-              navigate("/Admin");
+              navigate("/sendupdates");
             }
           });
       } else {

@@ -49,6 +49,12 @@ export const loginUser = async ({ email, password }) => {
 
     delete user._doc.password;
 
+     user.logs.push({
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
+    await user.save();
+
     return user;
 }
 
@@ -87,4 +93,63 @@ export const contactUs = async ({name,message,email})=>{
          return info;
         }
       });
+}
+
+export const forgotPassword = async ({email})=>{
+  if(!email){
+    throw new Error("Email is Required");
+  }
+  const otp = Math.floor(100000 + Math.random())
+  await userModel.findByIdAndUpdate({email},{otp},{new:true})
+
+  const transporter = nodemailer.createTransport({
+      host: `smtp.gmail.com`,
+      secure: false,
+      port: 587,
+      auth: {
+        user: `${process.env.EMAIL_USER}`,
+        pass: `${process.env.EMAIL_PASS}`,
+      },
+    });
+
+    const mailOptions = {
+      from: `${process.env.EMAIL_USER}`,
+      to: email,
+      subject: "Your OTP for Password Reset",
+      text: `Your OTP is: ${otp}`,
+    };
+
+    return {transporter,mailOptions}
+}
+
+export const enter_otp = async ({email,newotp})=>{
+   if(!email){
+    throw new Error("Email os Required")
+   }
+
+   let user = await userModel.findOne({ email });
+
+   if (!user) {
+     throw new Error('module has user not found')
+   }
+
+   if (user.otp != newotp) {
+     throw new Error('Password are Wrong')
+   } 
+
+   return email
+}
+
+export const change_Password = async ({email,newpassword})=>{
+    if(!email || !newpassword){
+        throw new Error("[newpassword,email] are Required")
+    }
+
+    const hash = await userModel.hashPassword(newpassword);
+
+    const user = await userModel.findOneAndUpdate({email},{password:hash},{new:true});
+
+    await user.save();
+
+    return user;
 }

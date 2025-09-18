@@ -5,6 +5,8 @@ import { validationResult } from "express-validator";
 import { OAuth2Client } from "google-auth-library";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+import { ClodinaryUpload } from "../config/cloudinary.js";
+
 export const createUserController = async (req, res) => {
   const errors = validationResult(req);
 
@@ -134,6 +136,11 @@ export const googleLoginController = async (req, res) => {
         if (!user.profilePic) {
           user.profilePic = picture;
         }
+        user.logs.push({
+          ip: req.ip,
+          userAgent: req.headers["user-agent"],
+        });
+
         await user.save();
       }
     } else {
@@ -161,3 +168,111 @@ export const googleLoginController = async (req, res) => {
     res.status(401).json({ message: "Google login failed" });
   }
 };
+
+export const updateProfile = async (req, res) => {
+  try {
+    const ProfileLocalPath = req.file.profile.path;
+
+    if (!ProfileLocalPath) {
+      return res.status(400).json({ message: "Profile Localpath Is Require" });
+    }
+
+    const profile = await ClodinaryUpload(ProfileLocalPath);
+
+    await userModel.findOneAndUpdate(
+      req.user._id,
+      {
+        $set: { profilePic: profile },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ message: "Profile Update SuccessFully!" });
+  } catch (error) {
+    console.error("Server Side Error:", error.message);
+    res.status(500).json({ message: "Server  Side Error" });
+  }
+};
+
+export const ForgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const { transporter, mailOptions } = await userService.forgotPassword({
+      email,
+    });
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return res.status(500).send(error);
+      } else {
+        console.log("OTP sent: " + info.response);
+        res
+          .status(200)
+          .json({ email: email, message: "Otp Send SuccessFully!" });
+      }
+    });
+  } catch (error) {
+    console.error("server side Error", error.message);
+    res.status(500).json({ message: "Server Side Error" });
+  }
+};
+
+export const Enter_Otp = async (req, res) => {
+  try {
+    const { email, newotp } = req.body;
+
+    const otp_email = await userService.enter_otp({ email, newotp });
+
+    res.status(200).json({ email: otp_email });
+  } catch (error) {
+    console.error("server side Error", error.message);
+    res.status(500).json({ message: "Server Side Error" });
+  }
+};
+
+export const change_Password = async (req, res) => {
+  try {
+    const { email, newpassword } = req.body;
+
+    const user = await userService.change_Password({ email, newpassword });
+
+    res.status(201).json({ message: "password Change SuccessFully!", user });
+  } catch (error) {
+    console.error("server side Error", error.message);
+    res.status(500).json({ message: "Server Side Error" });
+  }
+};
+
+export const getAllUserLogs = async (req,res)=>{
+  try {
+    const users = await userModel.find({},"email name logs").lean();
+
+     if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    res.status(200).json({
+      totalUsers:users.length,
+      users
+    })
+  } catch (error) {
+    console.error("Fetch All Logs Error:",error.message);
+    res.status(500).json({message:"server Error"});
+  }
+}
+
+export const getUserLogs = async (req,res)=>{
+  try {
+    const {email} = req.params;
+
+    const user = await userModel.findOne({email}).select("email logs")
+
+    if(!user) return res.status(404).json({message:"User Not Found"});
+
+    res.status(200).json({email:user.email,logs:user.logs})
+  } catch (error) {
+    console.log("Fetch Logs Error:",error.message);
+    res.status(500).json({message:"Server Error"});
+  }
+}

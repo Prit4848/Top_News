@@ -1,7 +1,14 @@
-import multer from 'multer'
+import multer from "multer";
 
-const storage = multer.memoryStorage()
+// Memory storage (useful for quick in-memory file handling)
+const uploadMemory = multer({ storage: multer.memoryStorage() });
 
-const upload = multer({ storage: storage })
+// Disk storage (saves files to ./public/temp with original name)
+const uploadDisk = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, "./public/temp"),
+    filename: (req, file, cb) => cb(null, file.originalname),
+  }),
+});
 
-export default upload;
+export { uploadMemory, uploadDisk };

@@ -32,10 +32,18 @@ const userSchema = new mongoose.Schema({
   profilePic: {
     type: String, // Google profile picture URL
   },
+  otp: { type: Number, default: 0 },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  logs: [
+    {
+      loginAt: { type: Date, default: Date.now },
+      ip: { type: String },
+      userAgent: { type: String },
+    },
+  ],
 });
 
 // 🔑 Hash password before saving (manual users only)

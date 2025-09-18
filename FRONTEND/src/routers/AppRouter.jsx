@@ -12,6 +12,8 @@ import Admin from '../screens/Admin'
 import AdminProtectedWrapper from '../auth/AdminProtectedWrapper'
 import UserProtectedWrapper from '../auth/UserProtectedWrapper'
 import Logout from '../auth/Logout'
+import SendUpdates from '../screens/SendUpdates'
+import UserLogs from '../screens/UserLogs'
 
 
 const AppRouter = () => {
@@ -28,6 +30,8 @@ const AppRouter = () => {
         <Route path='/Connect' element={<ConnectPage/>} />
         <Route path='/About' element={<AboutPage/>} />
         <Route path='/Admin' element={<AdminProtectedWrapper><Admin/></AdminProtectedWrapper>} />
+        <Route path='/sendupdates' element={<SendUpdates/>} />
+        <Route path='/logs' element={<UserLogs/>} />
     </Routes>
     </BrowserRouter>
   )
