@@ -32,7 +32,7 @@ export const createUser = async ({ firstname,lastname, email, password, }) => {
 
 }
 
-export const loginUser = async ({ email, password }) => {
+export const loginUser = async ({ email, password,req }) => {
     const user = await userModel.findOne({
         email,
     }).select("+password");

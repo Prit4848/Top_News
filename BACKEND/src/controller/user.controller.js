@@ -43,7 +43,7 @@ export const loginUserController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await userService.loginUser({ email, password });
+    const user = await userService.loginUser({ email, password,req });
 
     const token = user.generateToken();
 
