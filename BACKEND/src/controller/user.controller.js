@@ -43,7 +43,12 @@ export const loginUserController = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await userService.loginUser({ email, password,req });
+    const user = await userService.loginUser({
+      email,
+      password,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
 
     const token = user.generateToken();
 
@@ -244,35 +249,35 @@ export const change_Password = async (req, res) => {
   }
 };
 
-export const getAllUserLogs = async (req,res)=>{
+export const getAllUserLogs = async (req, res) => {
   try {
-    const users = await userModel.find({},"email name logs").lean();
+    const users = await userModel.find({}, "email name logs").lean();
 
-     if (!users || users.length === 0) {
+    if (!users || users.length === 0) {
       return res.status(404).json({ message: "No users found" });
     }
 
     res.status(200).json({
-      totalUsers:users.length,
-      users
-    })
+      totalUsers: users.length,
+      users,
+    });
   } catch (error) {
-    console.error("Fetch All Logs Error:",error.message);
-    res.status(500).json({message:"server Error"});
+    console.error("Fetch All Logs Error:", error.message);
+    res.status(500).json({ message: "server Error" });
   }
-}
+};
 
-export const getUserLogs = async (req,res)=>{
+export const getUserLogs = async (req, res) => {
   try {
-    const {email} = req.params;
+    const { email } = req.params;
 
-    const user = await userModel.findOne({email}).select("email logs")
+    const user = await userModel.findOne({ email }).select("email logs");
 
-    if(!user) return res.status(404).json({message:"User Not Found"});
+    if (!user) return res.status(404).json({ message: "User Not Found" });
 
-    res.status(200).json({email:user.email,logs:user.logs})
+    res.status(200).json({ email: user.email, logs: user.logs });
   } catch (error) {
-    console.log("Fetch Logs Error:",error.message);
-    res.status(500).json({message:"Server Error"});
+    console.log("Fetch Logs Error:", error.message);
+    res.status(500).json({ message: "Server Error" });
   }
-}
+};

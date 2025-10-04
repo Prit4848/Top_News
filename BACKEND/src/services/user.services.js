@@ -32,9 +32,9 @@ export const createUser = async ({ firstname,lastname, email, password, }) => {
 
 }
 
-export const loginUser = async ({ email, password,req }) => {
+export const loginUser = async ({ email, password,ip, userAgent }) => {
     const user = await userModel.findOne({
-        email,
+        email
     }).select("+password");
 
     if (!user) {
@@ -49,10 +49,7 @@ export const loginUser = async ({ email, password,req }) => {
 
     delete user._doc.password;
 
-     user.logs.push({
-      ip: req.ip,
-      userAgent: req.headers["user-agent"],
-    });
+    user.logs.push({ ip, userAgent });
     await user.save();
 
     return user;
